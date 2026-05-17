@@ -16,12 +16,12 @@
             type="file" 
             id="file-input"
             @change="handleFileUpload"
-            accept=".png,.pdf,.docx,.txt"
+            accept=".png,.jpg,.jpeg,.pdf,.docx,.txt"
             class="file-input"
           />
           <label for="file-input" class="file-label">
             <span class="upload-icon">📁</span>
-            <span>Choose File (PNG, PDF, DOCX, TXT)</span>
+            <span>Choose File (PNG, JPG, PDF, DOCX, TXT)</span>
           </label>
           <div class="file-name" v-if="fileName">{{ fileName }}</div>
         </div>
@@ -196,13 +196,14 @@ export default {
       }
     },
     mockGenerate() {
-      const isPng = this.fileName.toLowerCase().endsWith('.png');
+      const fileNameLower = this.fileName.toLowerCase();
+      const isImage = fileNameLower.endsWith('.png') || fileNameLower.endsWith('.jpg') || fileNameLower.endsWith('.jpeg');
       const baseText = this.fileName ? this.fileContent : this.rawText;
       
       this.form.title = this.fileName ? this.fileName.replace(/\.[^/.]+$/, "") : "Generated Article";
       
-      if (isPng) {
-        this.form.summary = `Auto-generated content extracted from image: ${this.fileName}\n\n(This is a mockup. A real OCR backend like Tesseract.js would extract text from the PNG here).`;
+      if (isImage) {
+        this.form.summary = `Auto-generated content extracted from image: ${this.fileName}\n\n(This is a mockup. A real OCR backend like Tesseract.js would extract text from the image here).`;
       } else {
         this.form.summary = baseText || "Auto-generated summary...";
       }
