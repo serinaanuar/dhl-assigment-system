@@ -29,22 +29,13 @@
             Admin Panel
         </router-link>
 
-        <!-- OPS ONLY -->
+        <!-- USER ONLY -->
         <router-link 
-            v-if="isOps || isAdmin"
+            v-if="isUser || isAdmin"
             to="/app/knowledge-base"
             class="nav-item"
         >
             Knowledge Base
-        </router-link>
-
-        <!-- RPA ONLY -->
-        <router-link 
-            v-if="isRpa || isAdmin"
-            to="/app/dashboard"
-            class="nav-item"
-        >
-            RPA Logs
         </router-link>
 
         </nav>
@@ -88,7 +79,7 @@ export default {
 
   data() {
     return {
-      role: localStorage.getItem("role") || "ops",
+      role: localStorage.getItem("role") || "user",
       sidebarOpen: false
     };
   },
@@ -97,11 +88,8 @@ export default {
     isAdmin() {
       return this.role === "admin";
     },
-    isOps() {
-      return this.role === "ops";
-    },
-    isRpa() {
-      return this.role === "rpa";
+    isUser() {
+      return this.role === "user";
     }
   },
 

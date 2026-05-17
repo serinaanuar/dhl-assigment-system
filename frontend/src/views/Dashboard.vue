@@ -112,7 +112,7 @@
 export default {
   data() {
     return {
-      role: localStorage.getItem("role") || "ops",
+      role: localStorage.getItem("role") || "user",
       activities: [
         { title: "Draft content queued", detail: "SOP export article ready for review", status: "Pending", badgeClass: "badge-red" },
         { title: "Update published", detail: "Knowledge base entry for route policies updated", status: "Published", badgeClass: "badge-yellow" },

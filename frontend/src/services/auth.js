@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const AUTH_TOKEN_KEY = "authToken";
-const USER_ROLE_KEY = "userRole";
+const USER_ROLE_KEY = "role";
 const USER_EMAIL_KEY = "userEmail";
 const API_BASE = "http://localhost:3000";
 
@@ -30,6 +30,7 @@ export function setSession({ token, role, email }) {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
   localStorage.setItem(USER_ROLE_KEY, role);
   localStorage.setItem(USER_EMAIL_KEY, email);
+  localStorage.setItem("auth", "true");
 }
 
 export function clearSession() {

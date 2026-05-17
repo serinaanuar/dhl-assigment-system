@@ -79,11 +79,12 @@
           <small class="form-hint">Separate tags with commas.</small>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" v-if="isAdmin">
           <label for="status">Status</label>
           <select id="status" v-model="form.status" class="form-select">
             <option value="draft">Draft</option>
-            <option value="review">Review</option>
+            <option value="approved">Approved</option>
+            <option value="not-approved">Not Approved</option>
             <option value="published">Published</option>
           </select>
         </div>
@@ -123,8 +124,14 @@ export default {
       },
       newStep: "",
       isEdit: false,
-      articleId: null
+      articleId: null,
+      role: localStorage.getItem("role") || "user"
     };
+  },
+  computed: {
+    isAdmin() {
+      return this.role === "admin";
+    }
   },
   mounted() {
     const savedDraft = sessionStorage.getItem("articleDraft");

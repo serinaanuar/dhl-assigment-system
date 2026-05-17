@@ -27,7 +27,8 @@
           <select v-model="selectedStatus" class="select-filter">
             <option value="">All Statuses</option>
             <option value="draft">Draft</option>
-            <option value="review">Review</option>
+            <option value="approved">Approved</option>
+            <option value="not-approved">Not Approved</option>
             <option value="published">Published</option>
           </select>
         </div>
@@ -85,10 +86,23 @@
             </td>
             <td>{{ formatDate(article.dateCreated) }}</td>
             <td class="actions-cell">
+              <!-- Admin Actions -->
+              <button v-if="isAdmin && article.status === 'draft'" class="action-btn approve-btn" @click="changeStatus(article, 'approved')">
+                Approve
+              </button>
+              <button v-if="isAdmin && article.status === 'draft'" class="action-btn reject-btn" @click="changeStatus(article, 'not-approved')">
+                Reject
+              </button>
+              
+              <!-- User Actions -->
+              <button v-if="isUser && article.status === 'approved'" class="action-btn publish-btn" @click="changeStatus(article, 'published')">
+                Publish
+              </button>
+
               <button class="action-btn edit-btn" @click="editArticle(article.id)">
                 Edit
               </button>
-              <button class="action-btn delete-btn" @click="deleteArticle(article.id)">
+              <button v-if="isAdmin" class="action-btn delete-btn" @click="deleteArticle(article.id)">
                 Delete
               </button>
             </td>
@@ -110,13 +124,20 @@ export default {
       selectedStatus: "",
       selectedTag: "",
       articles: [],
-      loading: false
+      loading: false,
+      role: localStorage.getItem("role") || "user"
     };
   },
   async mounted() {
     await this.loadArticles();
   },
   computed: {
+    isAdmin() {
+      return this.role === "admin";
+    },
+    isUser() {
+      return this.role === "user";
+    },
     uniqueTags() {
       const allTags = this.articles.flatMap(article => article.tags || []);
       return [...new Set(allTags)].sort();
@@ -151,7 +172,12 @@ export default {
       this.loading = false;
     },
     capitalizeStatus(status) {
+      if (status === 'not-approved') return 'Not Approved';
       return status.charAt(0).toUpperCase() + status.slice(1);
+    },
+    async changeStatus(article, newStatus) {
+      await api.updateArticle(article.id, { ...article, status: newStatus });
+      await this.loadArticles();
     },
     formatDate(dateString) {
       const options = { year: "numeric", month: "short", day: "numeric" };
@@ -338,14 +364,19 @@ export default {
   color: #F57F17;
 }
 
-.status-badge.review {
-  background: #BBDEFB;
-  color: #1565C0;
+.status-badge.approved {
+  background: #C8E6C9;
+  color: #2E7D32;
+}
+
+.status-badge.not-approved {
+  background: #FFCDD2;
+  color: #C62828;
 }
 
 .status-badge.published {
-  background: #C8E6C9;
-  color: #2E7D32;
+  background: #E3F2FD;
+  color: #1565C0;
 }
 
 /* Table Section */
@@ -430,23 +461,41 @@ export default {
   min-width: 60px;
 }
 
-.edit-btn {
+.approve-btn {
   background: #4CAF50;
+  color: white;
+}
+.approve-btn:hover { background: #45a049; }
+
+.reject-btn {
+  background: #f44336;
+  color: white;
+}
+.reject-btn:hover { background: #da190b; }
+
+.publish-btn {
+  background: #2196F3;
+  color: white;
+}
+.publish-btn:hover { background: #0b7dda; }
+
+.edit-btn {
+  background: #FF9800;
   color: white;
 }
 
 .edit-btn:hover {
-  background: #45a049;
+  background: #e68a00;
   transform: translateY(-1px);
 }
 
 .delete-btn {
-  background: #FF4444;
+  background: #9E9E9E;
   color: white;
 }
 
 .delete-btn:hover {
-  background: #FF5555;
+  background: #757575;
   transform: translateY(-1px);
 }
 

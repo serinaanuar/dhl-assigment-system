@@ -32,22 +32,22 @@ const routes = [
       {
         path: "knowledge-base",
         component: KnowledgeBase,
-        meta: { requiresAuth: true, allowedRoles: ["ops", "admin"] }
+        meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
       },
       {
         path: "upload",
         component: UploadArticle,
-        meta: { requiresAuth: true, allowedRoles: ["ops", "admin"] }
+        meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
       },
       {
         path: "editor",
         component: ArticleEditor,
-        meta: { requiresAuth: true, allowedRoles: ["ops", "admin"] }
+        meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
       },
       {
         path: "add-article",
         component: AddArticle,
-        meta: { requiresAuth: true, allowedRoles: ["ops", "admin"] }
+        meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
       },
       {
         path: "admin",
@@ -57,7 +57,7 @@ const routes = [
       {
         path: "rpa-logs",
         component: RpaLogs,
-        meta: { requiresAuth: true, allowedRoles: ["rpa", "admin"] }
+        meta: { requiresAuth: true, allowedRoles: ["admin"] }
       },
       {
         path: "",

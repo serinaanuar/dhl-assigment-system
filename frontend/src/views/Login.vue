@@ -14,31 +14,31 @@
 </template>
 
 <script>
+import { login } from "../services/auth";
+
 export default {
   name: "Login",
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      error: ""
     };
   },
   methods: {
-    login() {
-        if (this.email && this.password) {
-
-            // SIMPLE ROLE LOGIC (for demo purposes)
-            let role = "ops";
-
-            if (this.email === "admin@dhl.com") role = "admin";
-            else if (this.email === "rpa@dhl.com") role = "rpa";
-            else role = "ops";
-
-            localStorage.setItem("auth", "true");
-            localStorage.setItem("role", role);
-
-            this.$router.push("/app/dashboard");
+    async login() {
+      if (this.email && this.password) {
+        try {
+          this.error = "";
+          await login(this.email, this.password);
+          this.$router.push("/app/dashboard");
+        } catch (err) {
+          this.error = "Invalid email or password.";
         }
-        }
+      } else {
+        this.error = "Please enter both email and password.";
+      }
+    }
   }
 };
 </script>

@@ -87,7 +87,7 @@
         </div>
 
         <!-- PUBLICATION STATUS -->
-        <div class="form-group">
+        <div class="form-group" v-if="isAdmin">
           <label for="status">Publication Status</label>
           <select
             id="status"
@@ -95,8 +95,8 @@
             class="form-select"
           >
             <option value="draft">Draft</option>
-            <option value="review">Review</option>
-            <option value="publish">Publish</option>
+            <option value="approved">Approved</option>
+            <option value="published">Published</option>
           </select>
         </div>
 
@@ -135,8 +135,14 @@ export default {
         tags: "",
         status: "draft"
       },
-      newStep: ""
+      newStep: "",
+      role: localStorage.getItem("role") || "user"
     };
+  },
+  computed: {
+    isAdmin() {
+      return this.role === "admin";
+    }
   },
   methods: {
     addStep() {

@@ -29,6 +29,41 @@ const writeDb = (items) => {
 
 let knowledgeBase = readDb();
 
+// Mock Users Database
+const users = [
+  { email: "admin@dhl.my", password: "admin123", role: "admin" },
+  { email: "user@dhl.my", password: "user123", role: "user" }
+];
+
+// AUTH ENDPOINTS
+app.post("/auth/login", (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find(u => u.email === email && u.password === password);
+  
+  if (user) {
+    const token = Buffer.from(`${email}:${user.role}:${Date.now()}`).toString('base64');
+    res.json({ token, user: { email: user.email, role: user.role } });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+app.get("/auth/me", (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('ascii');
+    const [email, role] = decoded.split(':');
+    res.json({ user: { email, role } });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
 // GET KB
 app.get("/kb", (req, res) => {
   res.json(knowledgeBase);
