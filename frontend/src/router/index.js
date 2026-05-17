@@ -4,7 +4,6 @@ import { isAuthenticated, getRole } from "../services/auth";
 import Login from "../views/Login.vue";
 import AppLayout from "../layouts/AppLayout.vue";
 import Dashboard from "../views/Dashboard.vue";
-import UploadArticle from "../views/UploadArticle.vue";
 import AddArticle from "../views/AddArticle.vue";
 import KnowledgeBase from "../views/KnowledgeBase.vue";
 import ArticleEditor from "../views/ArticleEditor.vue";
@@ -32,11 +31,6 @@ const routes = [
       {
         path: "knowledge-base",
         component: KnowledgeBase,
-        meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
-      },
-      {
-        path: "upload",
-        component: UploadArticle,
         meta: { requiresAuth: true, allowedRoles: ["user", "admin"] }
       },
       {

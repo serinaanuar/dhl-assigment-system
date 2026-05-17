@@ -13,5 +13,18 @@
     ],
     "status": "published",
     "createdAt": "2026-05-17T15:24:01.741Z"
+  },
+  {
+    "id": 1779033541937,
+    "title": "Error Code AUTH_401",
+    "summary": "[Mock Content extracted from Error Code AUTH_401.txt]",
+    "steps": [
+      "Review auto-generated content",
+      "Make necessary edits",
+      "Submit for approval"
+    ],
+    "tags": [],
+    "status": "draft",
+    "createdAt": "2026-05-17T15:59:01.937Z"
   }
 ]

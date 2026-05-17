@@ -6,6 +6,46 @@
       <p>Fill in the details below to create a new article</p>
     </div>
 
+    <!-- AUTO-GENERATE SECTION -->
+    <div class="article-content" style="margin-bottom: 20px;">
+      <div class="upload-section">
+        <h2 class="section-title">Import File or Paste Text</h2>
+        
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="file-input"
+            @change="handleFileUpload"
+            accept=".png,.pdf,.docx,.txt"
+            class="file-input"
+          />
+          <label for="file-input" class="file-label">
+            <span class="upload-icon">📁</span>
+            <span>Choose File (PNG, PDF, DOCX, TXT)</span>
+          </label>
+          <div class="file-name" v-if="fileName">{{ fileName }}</div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <textarea
+          v-model="rawText"
+          class="form-textarea text-input"
+          placeholder="Paste raw content here to auto-fill the form below"
+        ></textarea>
+        
+        <button 
+          type="button" 
+          class="btn btn-generate" 
+          @click="mockGenerate"
+          :disabled="!fileName && !rawText"
+          style="margin-top: 16px;"
+        >
+          Auto-Generate
+        </button>
+      </div>
+    </div>
+
     <!-- FORM CONTENT -->
     <div class="article-content">
       <form @submit.prevent="submitArticle" class="article-form">
@@ -136,7 +176,10 @@ export default {
         status: "draft"
       },
       newStep: "",
-      role: localStorage.getItem("role") || "user"
+      role: localStorage.getItem("role") || "user",
+      fileName: "",
+      rawText: "",
+      fileContent: ""
     };
   },
   computed: {
@@ -145,6 +188,28 @@ export default {
     }
   },
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.fileName = file.name;
+        this.fileContent = `[Mock Content extracted from ${this.fileName}]`;
+      }
+    },
+    mockGenerate() {
+      const isPng = this.fileName.toLowerCase().endsWith('.png');
+      const baseText = this.fileName ? this.fileContent : this.rawText;
+      
+      this.form.title = this.fileName ? this.fileName.replace(/\.[^/.]+$/, "") : "Generated Article";
+      
+      if (isPng) {
+        this.form.summary = `Auto-generated content extracted from image: ${this.fileName}\n\n(This is a mockup. A real OCR backend like Tesseract.js would extract text from the PNG here).`;
+      } else {
+        this.form.summary = baseText || "Auto-generated summary...";
+      }
+      
+      this.form.steps = ["Review auto-generated content", "Make necessary edits", "Submit for approval"];
+      alert("Form auto-populated! You can now refine the content.");
+    },
     addStep() {
       if (this.newStep.trim()) {
         this.form.steps.push(this.newStep.trim());
@@ -192,6 +257,9 @@ export default {
         status: "draft"
       };
       this.newStep = "";
+      this.fileName = "";
+      this.rawText = "";
+      this.fileContent = "";
     },
     backToDashboard() {
       this.$router.push("/app/dashboard");
@@ -236,6 +304,88 @@ export default {
   padding: clamp(16px, 4vw, 24px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
+}
+
+/* Upload Section Styles */
+.section-title {
+  color: #000;
+  font-size: clamp(14px, 3vw, 16px);
+  margin-bottom: 12px;
+  border-bottom: 2px solid #FFD700;
+  padding-bottom: 8px;
+}
+
+.file-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(16px, 4vw, 24px);
+  border: 2px dashed #FFD700;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #333;
+  font-size: clamp(12px, 2vw, 14px);
+}
+
+.file-label:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: #FFC700;
+}
+
+.upload-icon {
+  font-size: 24px;
+}
+
+.file-name {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  color: #333;
+  font-size: clamp(11px, 1.8vw, 13px);
+  word-break: break-all;
+}
+
+.divider {
+  text-align: center;
+  color: #999;
+  font-size: clamp(12px, 2vw, 14px);
+  font-weight: 600;
+  padding: 12px 0;
+}
+
+.text-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-generate {
+  background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+  color: #333;
+  width: 100%;
+}
+
+.btn-generate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.btn-generate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .article-form {

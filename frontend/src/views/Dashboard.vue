@@ -8,8 +8,7 @@
       </div>
       <div class="dashboard-actions">
         <button @click="goToKnowledgeBase" class="action-btn btn-kb">Knowledge Base</button>
-        <button @click="goToUpload" class="action-btn btn-upload">Upload / Generate</button>
-        <button @click="goToAddArticle" class="action-btn btn-add">Add New Article</button>
+        <button @click="goToAddArticle" class="action-btn btn-add">Create Article</button>
       </div>
     </div>
 
@@ -133,9 +132,6 @@ export default {
   methods: {
     goToKnowledgeBase() {
       this.$router.push("/app/knowledge-base");
-    },
-    goToUpload() {
-      this.$router.push("/app/upload");
     },
     goToAddArticle() {
       this.$router.push("/app/add-article");
