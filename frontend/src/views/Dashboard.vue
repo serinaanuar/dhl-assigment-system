@@ -16,28 +16,28 @@
       <div class="summary-card">
         <div>
           <p class="card-label">Total Articles</p>
-          <p class="card-value">12</p>
+          <p class="card-value">{{ totalArticles }}</p>
         </div>
         <div class="card-icon icon-yellow">📄</div>
       </div>
       <div class="summary-card">
         <div>
           <p class="card-label">Published</p>
-          <p class="card-value">8</p>
+          <p class="card-value">{{ publishedCount }}</p>
         </div>
         <div class="card-icon icon-red">✅</div>
       </div>
       <div class="summary-card">
         <div>
           <p class="card-label">Drafts</p>
-          <p class="card-value">3</p>
+          <p class="card-value">{{ draftsCount }}</p>
         </div>
         <div class="card-icon icon-black">✍️</div>
       </div>
       <div class="summary-card">
         <div>
           <p class="card-label">Active Tasks</p>
-          <p class="card-value">5</p>
+          <p class="card-value">{{ reviewCount }}</p>
         </div>
         <div class="card-icon icon-red">⚙️</div>
       </div>
@@ -54,7 +54,11 @@
         </div>
 
         <div class="item-list">
-          <div v-for="(activity, index) in activities" :key="index" class="item-row">
+          <div v-if="activities.length === 0" class="item-row empty-state">
+            <p class="item-title">No article activity yet.</p>
+            <p class="item-meta">Create an article or publish content to populate the dashboard.</p>
+          </div>
+          <div v-else v-for="(activity, index) in activities" :key="index" class="item-row">
             <div class="item-info">
               <p class="item-title">{{ activity.title }}</p>
               <p class="item-meta">{{ activity.detail }}</p>
@@ -108,28 +112,87 @@
 </template>
 
 <script>
+import api from "../services/api";
+
 export default {
   data() {
     return {
       role: localStorage.getItem("role") || "user",
-      activities: [
-        { title: "Draft content queued", detail: "SOP export article ready for review", status: "Pending", badgeClass: "badge-red" },
-        { title: "Update published", detail: "Knowledge base entry for route policies updated", status: "Published", badgeClass: "badge-yellow" },
-        { title: "New request received", detail: "Add 'Outbound tracking' article to KB", status: "Review", badgeClass: "badge-black" }
-      ],
-      progressSteps: [
-        { title: "Approval flow", percent: 84, color: "#d40511" },
-        { title: "Content draft", percent: 62, color: "#FFA500" },
-        { title: "QA checks", percent: 38, color: "#111" }
-      ],
-      sessions: [
-        { name: "Onboarding guide review", date: "May 12", mode: "Live session", status: "Open", badgeClass: "badge-red" },
-        { name: "Article standard audit", date: "May 14", mode: "Self service", status: "Active", badgeClass: "badge-yellow" },
-        { name: "Policy update sync", date: "May 18", mode: "Hybrid", status: "Ready", badgeClass: "badge-black" }
-      ]
+      articles: [],
+      activities: [],
+      progressSteps: [],
+      sessions: []
     };
   },
+  computed: {
+    totalArticles() {
+      return this.articles.length;
+    },
+    publishedCount() {
+      return this.articles.filter(article => ["publish", "published"].includes(article.status)).length;
+    },
+    draftsCount() {
+      return this.articles.filter(article => article.status === "draft").length;
+    },
+    reviewCount() {
+      return this.articles.filter(article => article.status === "review").length;
+    }
+  },
+  async mounted() {
+    await this.loadDashboardData();
+  },
   methods: {
+    async loadDashboardData() {
+      this.articles = await api.getArticles();
+      this.refreshDashboardMetrics();
+    },
+    refreshDashboardMetrics() {
+      const sortedArticles = [...this.articles].sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
+
+      this.activities = sortedArticles.slice(0, 4).map(article => ({
+        title: article.title,
+        detail: article.summary || article.steps.slice(0, 1).join(" ") || "No summary available",
+        status: article.status === "publish" ? "Published" : article.status === "review" ? "In review" : "Draft",
+        badgeClass: article.status === "publish" ? "badge-yellow" : article.status === "review" ? "badge-black" : "badge-red"
+      }));
+
+      const total = this.totalArticles || 1;
+      const draftPct = Math.round((this.draftsCount / total) * 100);
+      const reviewPct = Math.round((this.reviewCount / total) * 100);
+      const publishPct = Math.round((this.publishedCount / total) * 100);
+
+      this.progressSteps = [
+        { title: "Published", percent: publishPct, color: "#4caf50" },
+        { title: "In review", percent: reviewPct, color: "#d40511" },
+        { title: "Draft", percent: draftPct, color: "#FFA500" }
+      ];
+
+      const tagCounts = this.articles.reduce((acc, article) => {
+        (article.tags || []).forEach(tag => {
+          if (!tag) return;
+          acc[tag] = (acc[tag] || 0) + 1;
+        });
+        return acc;
+      }, {});
+
+      const topTags = Object.entries(tagCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 3);
+
+      this.sessions = topTags.map(([tag, count]) => ({
+        name: `Tag: ${tag}`,
+        date: `${count} article${count === 1 ? "" : "s"}`,
+        mode: "Knowledge focus",
+        status: "Active",
+        badgeClass: "badge-yellow"
+      }));
+
+      if (this.sessions.length === 0) {
+        this.sessions = [
+          { name: "No active tags", date: "Add tags to articles", mode: "Content focus", status: "Ready", badgeClass: "badge-black" }
+        ];
+      }
+    },
     goToKnowledgeBase() {
       this.$router.push("/app/knowledge-base");
     },

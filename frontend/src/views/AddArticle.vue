@@ -3,13 +3,14 @@
     <!-- HEADER -->
     <div class="article-header">
       <h1>Create New Article</h1>
-      <p>Fill in the details below to create a new article</p>
+      <p>You can auto-generate a draft by importing a file, or write an article completely from scratch.</p>
     </div>
 
     <!-- AUTO-GENERATE SECTION -->
     <div class="article-content" style="margin-bottom: 20px;">
       <div class="upload-section">
-        <h2 class="section-title">Import File or Paste Text</h2>
+        <h2 class="section-title">Option 1: Auto-Generate (Optional)</h2>
+        <p class="section-desc">Upload a document, image, or paste raw text. We will extract the content and automatically fill the form below.</p>
         
         <div class="file-input-wrapper">
           <input 
@@ -37,17 +38,21 @@
         <button 
           type="button" 
           class="btn btn-generate" 
-          @click="mockGenerate"
-          :disabled="!fileName && !rawText"
+          @click="generateContent"
+          :disabled="(!fileName && !rawText) || loadingOcr"
           style="margin-top: 16px;"
         >
-          Auto-Generate
+          {{ loadingOcr ? 'Extracting Text...' : 'Auto-Generate' }}
         </button>
+
       </div>
     </div>
 
     <!-- FORM CONTENT -->
     <div class="article-content">
+      <h2 class="section-title">Option 2: Manual Entry / Review</h2>
+      <p class="section-desc">Fill out these fields from scratch, or review and refine the auto-generated content before publishing.</p>
+      
       <form @submit.prevent="submitArticle" class="article-form">
         <!-- TITLE -->
         <div class="form-group">
@@ -179,7 +184,9 @@ export default {
       role: localStorage.getItem("role") || "user",
       fileName: "",
       rawText: "",
-      fileContent: ""
+      fileContent: "",
+      loadingOcr: false,
+      selectedFile: null
     };
   },
   computed: {
@@ -191,26 +198,36 @@ export default {
     handleFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
+        this.selectedFile = file;
         this.fileName = file.name;
         this.fileContent = `[Mock Content extracted from ${this.fileName}]`;
       }
     },
-    mockGenerate() {
+    async generateContent() {
       const fileNameLower = this.fileName.toLowerCase();
       const isImage = fileNameLower.endsWith('.png') || fileNameLower.endsWith('.jpg') || fileNameLower.endsWith('.jpeg');
-      const baseText = this.fileName ? this.fileContent : this.rawText;
       
       this.form.title = this.fileName ? this.fileName.replace(/\.[^/.]+$/, "") : "Generated Article";
-      
-      if (isImage) {
-        this.form.summary = `Auto-generated content extracted from image: ${this.fileName}\n\n(This is a mockup. A real OCR backend like Tesseract.js would extract text from the image here).`;
+      this.form.steps = ["Review extracted content", "Make necessary edits", "Submit for approval"];
+      if (isImage && this.selectedFile) {
+        this.loadingOcr = true;
+        try {
+          // Call the backend OCR service
+          const extractedText = await api.extractText(this.selectedFile);
+          this.form.summary = extractedText;
+          alert("Text successfully extracted from image!");
+        } catch (err) {
+          alert("Failed to extract text. Please try again.");
+        } finally {
+          this.loadingOcr = false;
+        }
       } else {
-        this.form.summary = baseText || "Auto-generated summary...";
+        // Fallback for raw pasted text
+        this.form.summary = this.rawText || "Auto-generated summary...";
+        alert("Form auto-populated! You can now refine the content.");
       }
-      
-      this.form.steps = ["Review auto-generated content", "Make necessary edits", "Submit for approval"];
-      alert("Form auto-populated! You can now refine the content.");
     },
+
     addStep() {
       if (this.newStep.trim()) {
         this.form.steps.push(this.newStep.trim());
@@ -300,7 +317,7 @@ export default {
 
 .article-content {
   flex: 1;
-  background: white;
+  background: black;
   border-radius: 8px;
   padding: clamp(16px, 4vw, 24px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -310,10 +327,16 @@ export default {
 /* Upload Section Styles */
 .section-title {
   color: #000;
-  font-size: clamp(14px, 3vw, 16px);
-  margin-bottom: 12px;
+  font-size: clamp(16px, 4vw, 18px);
+  margin-bottom: 6px;
   border-bottom: 2px solid #FFD700;
   padding-bottom: 8px;
+}
+
+.section-desc {
+  color: #666;
+  font-size: clamp(12px, 2vw, 14px);
+  margin-bottom: 16px;
 }
 
 .file-input-wrapper {
@@ -413,12 +436,12 @@ export default {
 .form-select,
 .form-textarea {
   padding: clamp(8px, 2vw, 12px);
-  border: 1px solid #ddd;
+  border: 1px solid rgba(212, 5, 17, 0.2); /* Light red border */
   border-radius: 6px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: clamp(12px, 1.8vw, 14px);
   transition: all 0.2s ease;
-  background-color: #f5f5f5;
+  background-color: rgba(212, 5, 17, 0.03); /* Very light red background */
 }
 
 .form-input:focus,

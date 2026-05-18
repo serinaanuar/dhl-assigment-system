@@ -9,6 +9,10 @@ const DB_FILE = path.join(__dirname, "data.json");
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  next();
+});
 
 const readDb = () => {
   try {
@@ -68,6 +72,9 @@ app.get("/auth/me", (req, res) => {
 app.get("/kb", (req, res) => {
   res.json(knowledgeBase);
 });
+app.get("/api/articles", (req, res) => {
+  res.json(knowledgeBase);
+});
 
 // GET single KB article
 app.get("/kb/:id", (req, res) => {
@@ -77,36 +84,70 @@ app.get("/kb/:id", (req, res) => {
   }
   res.json(item);
 });
-
-// ADD KB draft
-app.post("/kb", (req, res) => {
-  const item = {
-    id: Date.now(),
-    title: req.body.title,
-    summary: req.body.summary,
-    steps: req.body.steps,
-    tags: req.body.tags,
-    status: req.body.status || "draft",
-    createdAt: new Date(),
-  };
-
-  knowledgeBase.push(item);
-  writeDb(knowledgeBase);
-  res.json(item);
-});
-
-// UPDATE status (Draft → Reviewed → Published)
-app.put("/kb/:id", (req, res) => {
+app.get("/api/articles/:id", (req, res) => {
   const item = knowledgeBase.find(k => k.id == req.params.id);
-  if (item) {
-    item.status = req.body.status;
-    writeDb(knowledgeBase);
+  if (!item) {
+    return res.status(404).json({ message: "Article not found" });
   }
   res.json(item);
 });
 
+// ADD KB draft
+const createArticle = (req) => ({
+  id: Date.now(),
+  title: req.body.title,
+  summary: req.body.summary,
+  steps: req.body.steps,
+  tags: req.body.tags,
+  status: req.body.status || "draft",
+  createdAt: req.body.createdAt || new Date().toISOString(),
+});
+
+app.post("/kb", (req, res) => {
+  const item = createArticle(req);
+  knowledgeBase.push(item);
+  writeDb(knowledgeBase);
+  res.status(201).json(item);
+});
+app.post("/api/articles", (req, res) => {
+  const item = createArticle(req);
+  knowledgeBase.push(item);
+  writeDb(knowledgeBase);
+  res.status(201).json(item);
+});
+
+// UPDATE status (Draft → Reviewed → Published)
+const updateArticle = (req) => ({
+  ...req.body,
+  status: req.body.status,
+});
+
+app.put("/kb/:id", (req, res) => {
+  const item = knowledgeBase.find(k => k.id == req.params.id);
+  if (item) {
+    Object.assign(item, updateArticle(req));
+    writeDb(knowledgeBase);
+    return res.json(item);
+  }
+  res.status(404).json({ message: "Article not found" });
+});
+app.put("/api/articles/:id", (req, res) => {
+  const item = knowledgeBase.find(k => k.id == req.params.id);
+  if (item) {
+    Object.assign(item, updateArticle(req));
+    writeDb(knowledgeBase);
+    return res.json(item);
+  }
+  res.status(404).json({ message: "Article not found" });
+});
+
 // DELETE
 app.delete("/kb/:id", (req, res) => {
+  knowledgeBase = knowledgeBase.filter(k => k.id != req.params.id);
+  writeDb(knowledgeBase);
+  res.json({ message: "Deleted" });
+});
+app.delete("/api/articles/:id", (req, res) => {
   knowledgeBase = knowledgeBase.filter(k => k.id != req.params.id);
   writeDb(knowledgeBase);
   res.json({ message: "Deleted" });
