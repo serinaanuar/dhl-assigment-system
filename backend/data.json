@@ -24,87 +24,185 @@
       "Submit for approval"
     ],
     "tags": [],
-    "status": "draft",
-    "createdAt": "2026-05-17T15:59:01.937Z"
+    "status": "approved",
+    "createdAt": "2026-05-17T15:59:01.937Z",
+    "dateCreated": "2026-05-17T15:59:01.937Z"
   },
   {
-    "id": 1779162782502,
-    "title": "Customer address invalid.",
-    "status": "draft",
-    "createdAt": "2026-05-19T03:53:02.502Z"
-  },
-  {
-    "id": 1779162786096,
+    "id": 1779179487508,
     "title": "Error Code AUTH_401",
-    "status": "draft",
-    "createdAt": "2026-05-19T03:53:06.096Z"
-  },
-  {
-    "id": 1779162787674,
-    "title": "Label not printing properly.",
-    "status": "draft",
-    "createdAt": "2026-05-19T03:53:07.674Z"
-  },
-  {
-    "id": 1779162789264,
-    "title": "New staff setup steps",
-    "status": "draft",
-    "createdAt": "2026-05-19T03:53:09.264Z"
-  },
-  {
-    "id": 1779162792040,
-    "title": "POD upload failed again",
-    "status": "draft",
-    "createdAt": "2026-05-19T03:53:12.040Z"
-  },
-  {
-    "id": 1779162795456,
-    "title": "SOP",
     "summary": "Auto-generated summary...",
     "steps": [
       "Review extracted content",
       "Make necessary edits",
       "Submit for approval"
     ],
-    "tags": [],
+    "tags": [
+      "tracking"
+    ],
     "status": "draft",
-    "createdAt": "2026-05-19T03:53:15.456Z",
-    "dateCreated": "2026-05-19T04:04:54.236Z"
+    "createdAt": "2026-05-19T08:31:27.508Z"
   },
   {
-    "id": 1779163880504,
+    "id": 1779179600734,
     "title": "Customer address invalid.",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:20.504Z"
+    "createdAt": "2026-05-19T08:33:20.734Z"
   },
   {
-    "id": 1779163884344,
+    "id": 1779179604634,
     "title": "Error Code AUTH_401",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:24.344Z"
+    "createdAt": "2026-05-19T08:33:24.634Z"
   },
   {
-    "id": 1779163885833,
+    "id": 1779179604640,
+    "title": "Error Code AUTH_401",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:24.640Z"
+  },
+  {
+    "id": 1779179604646,
+    "title": "Error Code AUTH_401",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:24.646Z"
+  },
+  {
+    "id": 1779179606189,
     "title": "Label not printing properly.",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:25.833Z"
+    "createdAt": "2026-05-19T08:33:26.189Z"
   },
   {
-    "id": 1779163887253,
+    "id": 1779179606193,
+    "title": "Label not printing properly.",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:26.193Z"
+  },
+  {
+    "id": 1779179606198,
+    "title": "Label not printing properly.",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:26.198Z"
+  },
+  {
+    "id": 1779179606202,
+    "title": "Label not printing properly.",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:26.202Z"
+  },
+  {
+    "id": 1779179607649,
     "title": "New staff setup steps",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:27.253Z"
+    "createdAt": "2026-05-19T08:33:27.649Z"
   },
   {
-    "id": 1779163889064,
+    "id": 1779179607654,
+    "title": "New staff setup steps",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:27.654Z"
+  },
+  {
+    "id": 1779179607659,
+    "title": "New staff setup steps",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:27.659Z"
+  },
+  {
+    "id": 1779179607664,
+    "title": "New staff setup steps",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:27.664Z"
+  },
+  {
+    "id": 1779179607670,
+    "title": "New staff setup steps",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:27.670Z"
+  },
+  {
+    "id": 1779179609076,
     "title": "POD upload failed again",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:29.064Z"
+    "createdAt": "2026-05-19T08:33:29.076Z"
   },
   {
-    "id": 1779163892188,
+    "id": 1779179609084,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:29.084Z"
+  },
+  {
+    "id": 1779179609090,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:29.090Z"
+  },
+  {
+    "id": 1779179609094,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:29.094Z"
+  },
+  {
+    "id": 1779179609100,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:29.100Z"
+  },
+  {
+    "id": 1779179609105,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:29.105Z"
+  },
+  {
+    "id": 1779179612357,
     "title": "SOP",
     "status": "draft",
-    "createdAt": "2026-05-19T04:11:32.188Z"
+    "createdAt": "2026-05-19T08:33:32.357Z"
+  },
+  {
+    "id": 1779179612405,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.405Z"
+  },
+  {
+    "id": 1779179612453,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.453Z"
+  },
+  {
+    "id": 1779179612501,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.501Z"
+  },
+  {
+    "id": 1779179612554,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.554Z"
+  },
+  {
+    "id": 1779179612593,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.593Z"
+  },
+  {
+    "id": 1779179612633,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.633Z"
+  },
+  {
+    "id": 1779179612670,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T08:33:32.670Z"
   }
 ]
