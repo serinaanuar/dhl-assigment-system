@@ -60,7 +60,51 @@
   {
     "id": 1779162795456,
     "title": "SOP",
+    "summary": "Auto-generated summary...",
+    "steps": [
+      "Review extracted content",
+      "Make necessary edits",
+      "Submit for approval"
+    ],
+    "tags": [],
     "status": "draft",
-    "createdAt": "2026-05-19T03:53:15.456Z"
+    "createdAt": "2026-05-19T03:53:15.456Z",
+    "dateCreated": "2026-05-19T04:04:54.236Z"
+  },
+  {
+    "id": 1779163880504,
+    "title": "Customer address invalid.",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:20.504Z"
+  },
+  {
+    "id": 1779163884344,
+    "title": "Error Code AUTH_401",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:24.344Z"
+  },
+  {
+    "id": 1779163885833,
+    "title": "Label not printing properly.",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:25.833Z"
+  },
+  {
+    "id": 1779163887253,
+    "title": "New staff setup steps",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:27.253Z"
+  },
+  {
+    "id": 1779163889064,
+    "title": "POD upload failed again",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:29.064Z"
+  },
+  {
+    "id": 1779163892188,
+    "title": "SOP",
+    "status": "draft",
+    "createdAt": "2026-05-19T04:11:32.188Z"
   }
 ]

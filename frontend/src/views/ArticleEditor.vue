@@ -5,6 +5,47 @@
       <p>Use this page to refine content, save a draft, or publish an article.</p>
     </div>
 
+    <!-- AUTO-GENERATE SECTION -->
+    <div class="editor-content" style="margin-bottom: 20px;">
+      <div class="upload-section">
+        <h2 class="section-title">Option 1: Auto-Generate (Optional)</h2>
+        <p class="section-desc">Upload a document, image, or paste raw text. We will extract the content and automatically fill the form below.</p>
+        
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="file-input"
+            @change="handleFileUpload"
+            accept=".png,.jpg,.jpeg,.pdf,.docx,.txt"
+            class="file-input"
+          />
+          <label for="file-input" class="file-label">
+            <span class="upload-icon">📁</span>
+            <span>Choose File (PNG, JPG, PDF, DOCX, TXT)</span>
+          </label>
+          <div class="file-name" v-if="fileName">{{ fileName }}</div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <textarea
+          v-model="rawText"
+          class="form-textarea text-input"
+          placeholder="Paste raw content here to auto-fill the form below"
+        ></textarea>
+        
+        <button 
+          type="button" 
+          class="btn btn-generate" 
+          @click="generateContent"
+          :disabled="(!fileName && !rawText) || loadingOcr"
+          style="margin-top: 16px;"
+        >
+          {{ loadingOcr ? 'Extracting Text...' : 'Auto-Generate' }}
+        </button>
+      </div>
+    </div>
+
     <div class="editor-content">
       <form @submit.prevent="saveArticle" class="editor-form">
         <div class="form-group">
@@ -125,7 +166,12 @@ export default {
       newStep: "",
       isEdit: false,
       articleId: null,
-      role: localStorage.getItem("role") || "user"
+      role: localStorage.getItem("role") || "user",
+      fileName: "",
+      rawText: "",
+      fileContent: "",
+      loadingOcr: false,
+      selectedFile: null
     };
   },
   computed: {
@@ -160,6 +206,42 @@ export default {
     }
   },
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.fileName = file.name;
+        this.fileContent = `[Mock Content extracted from ${this.fileName}]`;
+      }
+    },
+    async generateContent() {
+      const fileNameLower = this.fileName.toLowerCase();
+      const isImage = fileNameLower.endsWith('.png') || fileNameLower.endsWith('.jpg') || fileNameLower.endsWith('.jpeg');
+      
+      if (!this.form.title) {
+        this.form.title = this.fileName ? this.fileName.replace(/\.[^/.]+$/, "") : "Generated Article";
+      }
+      
+      if (this.form.steps.length === 0) {
+        this.form.steps = ["Review extracted content", "Make necessary edits", "Submit for approval"];
+      }
+
+      if (isImage && this.selectedFile) {
+        this.loadingOcr = true;
+        try {
+          const extractedText = await api.extractText(this.selectedFile);
+          this.form.summary = extractedText;
+          alert("Text successfully extracted from image!");
+        } catch (err) {
+          alert("Failed to extract text. Please try again.");
+        } finally {
+          this.loadingOcr = false;
+        }
+      } else {
+        this.form.summary = this.rawText || "Auto-generated summary...";
+        alert("Form auto-populated! You can now refine the content.");
+      }
+    },
     loadArticle(article) {
       this.form = {
         title: article.title || "",
@@ -223,6 +305,9 @@ export default {
       this.newStep = "";
       this.isEdit = false;
       this.articleId = null;
+      this.fileName = "";
+      this.rawText = "";
+      this.fileContent = "";
       this.clearSessionDrafts();
     },
     goBack() {
@@ -272,6 +357,94 @@ export default {
   padding: clamp(18px, 4vw, 24px);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow-y: auto;
+}
+
+/* Upload Section Styles */
+.section-title {
+  color: #000;
+  font-size: clamp(16px, 4vw, 18px);
+  margin-bottom: 6px;
+  border-bottom: 2px solid #FFD700;
+  padding-bottom: 8px;
+}
+
+.section-desc {
+  color: #666;
+  font-size: clamp(12px, 2vw, 14px);
+  margin-bottom: 16px;
+}
+
+.file-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(16px, 4vw, 24px);
+  border: 2px dashed #FFD700;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #333;
+  font-size: clamp(12px, 2vw, 14px);
+}
+
+.file-label:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: #FFC700;
+}
+
+.upload-icon {
+  font-size: 24px;
+}
+
+.file-name {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  color: #333;
+  font-size: clamp(11px, 1.8vw, 13px);
+  word-break: break-all;
+}
+
+.divider {
+  text-align: center;
+  color: #999;
+  font-size: clamp(12px, 2vw, 14px);
+  font-weight: 600;
+  padding: 12px 0;
+}
+
+.text-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-generate {
+  background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+  color: #333;
+  width: 100%;
+}
+
+.btn-generate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.btn-generate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .editor-form {
@@ -384,13 +557,13 @@ export default {
 }
 
 .btn-submit {
-  background: #FF4444;
+  background: #4CAF50;
   color: white;
 }
 
 .btn-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(255, 68, 68, 0.16);
+  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2);
 }
 
 .btn-reset {
