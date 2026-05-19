@@ -5,9 +5,17 @@
         <h1>Knowledge Base</h1>
         <p>Search and manage articles</p>
       </div>
-      <button class="add-article-btn" @click="goToAddArticle">
-        + Add New Article
-      </button>
+      <div class="header-actions">
+        <button v-if="isAdmin && selectedArticles.length > 0" class="delete-selected-btn" @click="deleteSelected">
+          Delete ({{ selectedArticles.length }})
+        </button>
+        <button v-if="isAdmin" class="delete-all-btn" @click="deleteAllArticles">
+          Delete All Articles
+        </button>
+        <button class="add-article-btn" @click="goToAddArticle">
+          + Add New Article
+        </button>
+      </div>
     </header>
 
     <div class="query-panel">
@@ -60,6 +68,9 @@
       <table v-else class="articles-table">
         <thead>
           <tr>
+            <th v-if="isAdmin" class="checkbox-cell">
+              <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" />
+            </th>
             <th>Title</th>
             <th>Status</th>
             <th>Tags</th>
@@ -69,6 +80,9 @@
         </thead>
         <tbody>
           <tr v-for="article in filteredArticles" :key="article.id">
+            <td v-if="isAdmin" class="checkbox-cell">
+              <input type="checkbox" :value="article.id" v-model="selectedArticles" />
+            </td>
             <td class="title-cell">{{ article.title }}</td>
             <td>
               <span :class="['status-badge', article.status]">
@@ -125,7 +139,8 @@ export default {
       selectedTag: "",
       articles: [],
       loading: false,
-      role: localStorage.getItem("role") || "user"
+      role: localStorage.getItem("role") || "user",
+      selectedArticles: []
     };
   },
   async mounted() {
@@ -137,6 +152,9 @@ export default {
     },
     isUser() {
       return this.role === "user";
+    },
+    isAllSelected() {
+      return this.filteredArticles.length > 0 && this.selectedArticles.length === this.filteredArticles.length;
     },
     uniqueTags() {
       const allTags = this.articles.flatMap(article => article.tags || []);
@@ -170,6 +188,7 @@ export default {
       this.articles = await api.getArticles();
       this.articles.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
       this.loading = false;
+      this.selectedArticles = []; // Reset selection when articles reload
     },
     capitalizeStatus(status) {
       if (status === 'not-approved') return 'Not Approved';
@@ -196,6 +215,26 @@ export default {
 
       if (confirm(`Are you sure you want to delete "${article.title}"?`)) {
         await api.deleteArticle(articleId);
+        await this.loadArticles();
+      }
+    },
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedArticles = this.filteredArticles.map(a => a.id);
+      } else {
+        this.selectedArticles = [];
+      }
+    },
+    async deleteSelected() {
+      if (this.selectedArticles.length === 0) return;
+      if (confirm(`Are you sure you want to delete ${this.selectedArticles.length} selected articles?`)) {
+        await Promise.all(this.selectedArticles.map(id => api.deleteArticle(id)));
+        await this.loadArticles();
+      }
+    },
+    async deleteAllArticles() {
+      if (confirm("Are you sure you want to delete ALL articles in the database? This action cannot be undone.")) {
+        await api.deleteAllArticles();
         await this.loadArticles();
       }
     },
@@ -240,6 +279,13 @@ export default {
   color: #666;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .add-article-btn {
   background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
   color: #000;
@@ -255,6 +301,40 @@ export default {
 .add-article-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.delete-all-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
+  border-radius: 6px;
+  font-size: clamp(12px, 2vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.delete-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.delete-selected-btn {
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px);
+  border-radius: 6px;
+  font-size: clamp(12px, 2vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.delete-selected-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 
 .query-panel {
@@ -430,6 +510,17 @@ export default {
   color: #000;
 }
 
+.checkbox-cell {
+  width: 40px;
+  text-align: center !important;
+}
+
+.checkbox-cell input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .tags-cell {
   display: flex;
   gap: 6px;
@@ -507,7 +598,9 @@ export default {
     gap: 16px;
   }
 
-  .add-article-btn {
+  .add-article-btn,
+  .delete-all-btn,
+  .delete-selected-btn {
     width: 100%;
   }
 

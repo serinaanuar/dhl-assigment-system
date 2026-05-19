@@ -141,6 +141,18 @@ app.put("/api/articles/:id", (req, res) => {
   res.status(404).json({ message: "Article not found" });
 });
 
+// DELETE ALL
+app.delete("/kb", (req, res) => {
+  knowledgeBase = [];
+  writeDb(knowledgeBase);
+  res.json({ message: "All articles deleted" });
+});
+app.delete("/api/articles", (req, res) => {
+  knowledgeBase = [];
+  writeDb(knowledgeBase);
+  res.json({ message: "All articles deleted" });
+});
+
 // DELETE
 app.delete("/kb/:id", (req, res) => {
   knowledgeBase = knowledgeBase.filter(k => k.id != req.params.id);

@@ -119,5 +119,15 @@ export default {
       saveToLocal(filtered);
       return true;
     }
+  },
+
+  async deleteAllArticles() {
+    try {
+      await client.delete("/kb");
+      return true;
+    } catch (error) {
+      saveToLocal([]);
+      return true;
+    }
   }
 };
